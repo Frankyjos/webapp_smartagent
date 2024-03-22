@@ -1,6 +1,8 @@
 import requests
 import streamlit as st
 from streamlit_modal import Modal
+import random
+
 
 st.set_page_config(
     page_title="Smart Agent",
@@ -55,19 +57,20 @@ def send_message(message, user_selected_topic, language):
             st.success("Mensajes enviado correctamente")
         #    st.write(message)
         with st.chat_message("assistant"):
-            data = response.text
-            st.write(data)
-            st.session_state.messages.append({"role": "assistant", "content": data})
+            data_json = response.json()
+            message_text = data_json["message"]
+            st.write(message_text)
+            st.session_state.messages.append({"role": "assistant", "content": message_text})
 
 
      # Check for the string and set the boolean variable
-        create_ticket_flag = "[CREATE TICKET]" in data
+        create_ticket_flag = "[CREATE TICKET]" in data_json
         st.session_state.create_ticket_flag = create_ticket_flag  # Store in session state
      #  st.write(create_ticket_flag)
         if create_ticket_flag:
             st.button("Crear ticket")
         else: st.empty()
-        st.session_state.messages.append({"role": "assistant", "content": data})
+        #st.session_state.messages.append({"role": "assistant", "content": message_text})
 
 # Sidebar
 sidebar = st.sidebar
@@ -87,18 +90,21 @@ if st.chat_message:
 
 
 # Función para enviar el request POST
-def crear_ticket(descripcion):
+def crear_ticket(nombre,correo,descripcion):
     # Definir la URL y el body del requests
     url = "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets"
     body = {
+        "name": nombre,
+        "email": correo,
         "description": descripcion,
     }
 
 # Enviar el request
     responseticket = requests.post(url, json=body)
     if responseticket.status_code == 200:
-            st.success("Ticket creado con éxito")
-
+            # Generar un número aleatorio entre 0001 y 9999
+            numero_aleatorio = random.randint(1, 9999)
+            st.success(f"**Creado con éxito el Nro. de ticket {numero_aleatorio:04d}**")
 
 modal = Modal(
     "Crear nuevo ticket en Monday", 
@@ -112,7 +118,7 @@ modal = Modal(
 
 with st.sidebar:
     nuevo_ticket = st.checkbox("Crear nuevo ticket")
-    if nuevo_ticket:
+    if  nuevo_ticket:
         open_modal = st.button("Nuevo ticket")
         if open_modal:
             modal.open()
@@ -123,6 +129,8 @@ with st.sidebar:
 if modal.is_open():
     with modal.container():
         # Campos del formulario
+        nombre = st.text_input("Nombre", key="nombre")
+        correo = st.text_input("Correo", key="correo")
         descripcion = st.text_input("Descripción", key="descripcion")
 
 
@@ -131,4 +139,4 @@ if modal.is_open():
 
         # Si se hace clic en el botón "Crear", enviar el request
         if boton_crear:
-            crear_ticket(descripcion)
+            crear_ticket(nombre,correo,descripcion)
