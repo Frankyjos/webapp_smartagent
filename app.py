@@ -1,6 +1,6 @@
 import requests
 import streamlit as st
-from streamlit_modal import Modal
+#from streamlit_modal import Modal
 import random
 
 
@@ -106,37 +106,37 @@ def crear_ticket(nombre,correo,descripcion):
             numero_aleatorio = random.randint(1, 9999)
             st.success(f"**Creado con éxito el Nro. de ticket {numero_aleatorio:04d}**")
 
-modal = Modal(
-    "Crear nuevo ticket en Monday", 
-    key="demo-modal",
-    
+#Modal = Modal (
+#    "Crear nuevo ticket en Monday", 
+#    key="demo-modal",
+#    
     # Optional
-    padding=20,    # default value
-    max_width=600,  # default value
+#    padding=20,    # default value
+#    max_width=600,  # default value
 
-)
+#)
 
-with st.sidebar:
-    nuevo_ticket = st.checkbox("Crear nuevo ticket")
-    if  nuevo_ticket:
-        open_modal = st.button("Nuevo ticket")
-        if open_modal:
-            modal.open()
-    else:
-        st.empty()
+#with st.sidebar:
+#    nuevo_ticket = st.checkbox("Crear nuevo ticket")
+ #   if  nuevo_ticket:
+  #      open_modal = st.button("Nuevo ticket")
+   #     if open_modal:
+    #        Modal.open()
+    #else:
+     #   st.empty()
 
 # Si el modal está abierto, mostrar el contenido
-if modal.is_open():
-    with modal.container():
-        # Campos del formulario
-        nombre = st.text_input("Nombre", key="nombre")
-        correo = st.text_input("Correo", key="correo")
-        descripcion = st.text_input("Descripción", key="descripcion")
+#if Modal.is_open():
+ #   with Modal.container():
+  #      # Campos del formulario
+   #     nombre = st.text_input("Nombre", key="nombre")
+    #    correo = st.text_input("Correo", key="correo")
+     #   descripcion = st.text_input("Descripción", key="descripcion")
 
 
-        # Botón para crear el ticket
-        boton_crear = st.button("Crear")
+      #  # Botón para crear el ticket
+       # boton_crear = st.button("Crear")
 
         # Si se hace clic en el botón "Crear", enviar el request
-        if boton_crear:
-            crear_ticket(nombre,correo,descripcion)
+        #if boton_crear:
+         #   crear_ticket(nombre,correo,descripcion)
