@@ -88,7 +88,7 @@ if st.chat_message:
 
 # Función para enviar el request POST
 def crear_ticket(descripcion):
-    # Definir la URL y el body del request
+    # Definir la URL y el body del requests
     url = "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets"
     body = {
         "description": descripcion,
