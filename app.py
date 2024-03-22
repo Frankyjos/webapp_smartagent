@@ -52,7 +52,7 @@ def send_message(message, user_selected_topic, language):
     )
     if response.status_code == 200:
         with st.sidebar:
-            st.success("Mensaje enviado correctamente")
+            st.success("Mensajes enviado correctamente")
         #    st.write(message)
         with st.chat_message("assistant"):
             data = response.text
