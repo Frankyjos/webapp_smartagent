@@ -16,34 +16,36 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# Function to fetch topics from the API
+def fetch_topics():
+    headers = {
+        "admin": "jairo.davila+demo@newtoms.com",
+        "channel": "WEB",
+    }
+    response = requests.get("https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/topics-channel", headers=headers)
+    if response.status_code == 200:
+        topics_data = response.json()
+        topic_names = [topic["topic_name"] for topic in topics_data]
+        topic_id = [topic["topic_id"] for topic in topics_data]
+        return topic_names
+    else:
+        # Handle error: display message or use default topics
+        st.error("Error al obtener los tópicos")
+
 # Accept user input
 if message := st.chat_input("Send a message"):
     st.session_state.messages.append({"role": "user", "content": message})
     with st.chat_message("user"):
         st.markdown(message)
 
-# Topic translation dictionary (invisible to user)
-topic_translations = {
-    "Retail": "jairo.davila+demo#RETAIL",
-    "Travel & Hospitality": "jairo.davila+demo#TRAVEL",
-    "Industrial, engineering & construction": "jairo.davila+demo#ENGINEERING",
-    "Financial services & insurance": "jairo.davila+demo#INSURANCE",
-}
 
 # Función para enviar la solicitud POST
-def send_message(message, user_selected_topic, language):
-
-
-    # Translate topic for internal use
-    translated_topic = topic_translations.get(user_selected_topic)
-    if not translated_topic:
-        # Handle potential missing translation (optional: raise warning or use default)
-        translated_topic = user_selected_topic  # Or provide a default value
+def send_message(message, topic_ids, language):
 
     message = {
         "message": message,
         "language": language,
-        "topic": translated_topic,
+        "topic": "jairo.davila+demo#"+topic,
         "summary": "false",
         "chat_history": [],
     }
@@ -53,8 +55,8 @@ def send_message(message, user_selected_topic, language):
     )
     if response.status_code == 200:
         with st.sidebar:
-            st.success("Mensaje enviado correctamente")
-        #    st.write(message)
+            st.success("Mensajes enviado correctamente")
+            st.write(message)
         with st.chat_message("assistant"):
             data_json = response.json()
             message_text = data_json["message"]
@@ -67,15 +69,18 @@ def send_message(message, user_selected_topic, language):
 # Sidebar
 sidebar = st.sidebar
 with st.sidebar:
-        st.image("logoSAv2.png")
+    st.image("logoSA.png")
 
 
-            # Topic selection with user-friendly labels
-topic = sidebar.selectbox("Seleccione un tópico", list(topic_translations.keys()))
+# Fetch topics before displaying the selection box
+topics_name = fetch_topics()
 
-            # Language selection
+# Topic selection with user-friendly labels
+topic = sidebar.selectbox("Seleccione un tópico", topics_name)
+
+# Language selection
 language = sidebar.selectbox("Seleccione un idioma", ["Spanish", "English"])
 
-            # Trigger on chat input
+# Trigger on chat input
 if st.chat_message:
-        send_message(message, topic, language)
+    send_message(message, topic, language)
