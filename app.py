@@ -41,7 +41,8 @@ if message := st.chat_input("Escribe una pregunta"):
 
 def popover():
     with st.popover("Crear nuevo ticket"):
-        with st.form("hello", clear_on_submit=True):
+        with st.form("tickets",clear_on_submit=True):
+            st.markdown("**Nuevo ticket**")
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
             descripcion = st.text_area("Descripción")
