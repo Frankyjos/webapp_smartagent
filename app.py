@@ -26,7 +26,7 @@ def fetch_topics():
     if response.status_code == 200:
         topics_data = response.json()
         topic_names = [topic["topic_name"] for topic in topics_data]
-        topic_id = [topic["topic_id"] for topic in topics_data]
+        #topic_id = [topic["topic_id"] for topic in topics_data]
         return topic_names
     else:
         # Handle error: display message or use default topics
@@ -55,21 +55,24 @@ def send_message(message, topic_ids, language):
     )
     if response.status_code == 200:
         with st.sidebar:
-            st.success("Mensajes enviado correctamente")
-            st.write(message)
+          st.success("Mensajes enviado correctamente")
+         #   st.write(message)
         with st.chat_message("assistant"):
             data_json = response.json()
             message_text = data_json["message"]
             nuevo_ticket = data_json["create_ticket"]
             st.write(message_text)
-            st.write(nuevo_ticket)
+            #st.write(nuevo_ticket)
             st.session_state.messages.append({"role": "assistant", "content": message_text})
+        with sidebar:
+            nuevoticket = st.write(nuevo_ticket)
+
 
 
 # Sidebar
 sidebar = st.sidebar
 with st.sidebar:
-    st.image("logoSA.png")
+    st.image("logoSAv3.png")
 
 
 # Fetch topics before displaying the selection box
