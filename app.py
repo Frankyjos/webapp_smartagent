@@ -95,7 +95,7 @@ def send_message(message, topic_ids, language):
             #st.write(nuevo_ticket)
             st.session_state.messages.append({"role": "assistant", "content": message_text})
         #with sidebar:
-        #    nuevoticket = st.write(nuevo_ticket)
+        #   nuevoticket = st.write(nuevo_ticket)
         
 
 
@@ -117,6 +117,14 @@ language = sidebar.selectbox("Seleccione un idioma", ["Spanish", "English"])
 # Trigger on chat input
 if st.chat_message:
     send_message(message, topic, language)
+
+
+# Reset button for chat history
+reset_button = st.sidebar.button("Reiniciar Conversación")
+if reset_button:
+  # Clear chat history
+  st.session_state.messages = []
+  st.experimental_rerun()
 
 with st.sidebar:
     st.write("")
