@@ -94,7 +94,7 @@ def send_message(message, topic, language):
 #                popover()
 
 # Sidebar
-#sidebar = st.sidebar
+sidebar = st.sidebar
 #with st.sidebar:
 #    st.image("logoSAv3.png")
 
