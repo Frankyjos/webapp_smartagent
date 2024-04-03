@@ -94,9 +94,9 @@ def send_message(message, topic, language):
 #                popover()
 
 # Sidebar
-sidebar = st.sidebar
-with st.sidebar:
-    st.image("logoSAv3.png")
+#sidebar = st.sidebar
+#with st.sidebar:
+#    st.image("logoSAv3.png")
 
 
 # Fetch topics before displaying the selection box
