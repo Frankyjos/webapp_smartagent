@@ -52,7 +52,6 @@ if message := st.chat_input("Escribe una pregunta"):
 def popover():
     with st.expander("Crea un nuevo ticket"):
         with st.form("nuevo ticket", clear_on_submit=True):
-            st.write(st.session_state["permanece"])
             st.markdown("**Nuevo ticket**")
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
