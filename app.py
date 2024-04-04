@@ -14,11 +14,9 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = [{
         "role": "assistant", 
         "content": """
-        Soy tu Asistente Virtual **NEWTOMS**, y estoy aquí para brindarte todo el apoyo que necesites.
-
-        Si por algún motivo mi respuesta no cubre tus expectativas, recuerda que puedes escribir "GENERAR UN TICKET" para recibir una atención personalizada y resolver tus inquietudes.
-        
-        **!Hazme tu  pregunta!**
+            Hola Soy tu Asistente Virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
+ 
+            **!Hazme tu pregunta!**
     """,
         }]
     st.session_state["ticket"] = False
@@ -52,7 +50,6 @@ if message := st.chat_input("Escribe una pregunta"):
 def popover():
     with st.expander("Crea un nuevo ticket"):
         with st.form("nuevo ticket", clear_on_submit=True):
-            st.markdown("**Nuevo ticket**")
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
             descripcion = st.session_state["descript"]
@@ -110,10 +107,6 @@ def send_message(message, topic, language):
             #else: st.sidebar.write("mientras el ticket no activa: " , st.session_state["ticket"])
 
 
-#ticket =  st.session_state["ticket"]
-#if ticket:
-#    popover()
-
 # Sidebar
 sidebar = st.sidebar
 with st.sidebar:
@@ -140,18 +133,12 @@ if reset_button:
   # Clear chat history
  #st.session_state.messages = []
  #st.experimental_rerun()
-    bienvenido_1 = ("Soy tu Asistente Virtual NEWTOMS, y estoy aquí para brindarte todo el apoyo que necesites.")
-    bienvenido_2= ("Si por algún motivo mi respuesta no cubre tus expectativas, recuerda que puedes escribir GENERAR UN TICKET para recibir una atención personalizada y resolver tus inquietudes.")
-    bienvenido_3 = ("!Hazme tu pregunta!")
-
     st.session_state["messages"] = [{
         "role": "assistant", 
         "content": """
-        Soy tu Asistente Virtual **NEWTOMS**, y estoy aquí para brindarte todo el apoyo que necesites.
-
-        Si por algún motivo mi respuesta no cubre tus expectativas, recuerda que puedes escribir "GENERAR UN TICKET" para recibir una atención personalizada y resolver tus inquietudes.
-
-        **!Hazme tu  pregunta!**
+        Hola Soy tu Asistente Virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
+ 
+        **!Hazme tu pregunta!**
     """,
         }]
     st.session_state["ticket"] = False
