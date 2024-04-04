@@ -2,15 +2,25 @@ import requests
 import streamlit as st
 import time
 
-ticket = False
 
-st.set_page_config(
-    page_title="Smart Agent",
-)
+st.session_state["ticket"] = False
+st.session_state["permanece"] = "abierto"
+#st.set_page_config(
+#    page_title="Smart Agent",
+#)
 
 # Initialize chat history
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "Hello!"}]
+    st.session_state["messages"] = [{
+        "role": "assistant", 
+        "content": """
+        Soy tu Asistente Virtual **NEWTOMS**, y estoy aquí para brindarte todo el apoyo que necesites.
+
+        Si por algún motivo mi respuesta no cubre tus expectativas, recuerda que puedes escribir "GENERAR UN TICKET" para recibir una atención personalizada y resolver tus inquietudes.
+        
+        **!Hazme tu  pregunta!**
+    """,
+        }]
     st.session_state["ticket"] = False
 
 # Display chat messages from history on app rerun
@@ -40,31 +50,36 @@ if message := st.chat_input("Escribe una pregunta"):
         st.markdown(message)
 
 def popover():
-       with st.form("tickets",clear_on_submit=False):
+    with st.expander("Crea un nuevo ticket"):
+        with st.form("nuevo ticket", clear_on_submit=True):
+            st.write(st.session_state["permanece"])
             st.markdown("**Nuevo ticket**")
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
-            descripcion = st.text_area("Descripción")
+            descripcion = st.session_state["descript"]
+            st.text_area("Descripción", value=descripcion)
             submitted = st.form_submit_button("Enviar")
+        if submitted:      
+                body = {
+                    "name": name,
+                    "email": email,
+                    "description": descripcion,
+                }
 
-#            if submitted:
-#                body = {
-#                    "name": name,
-#                    "email": email,
-#                    "description": descripcion,
-#                }
-
-#                response_pop = requests.post(
-#                        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
-#                        json=body,
-#                )#
-#
-#                if response_pop.status_code == 200:
-#                    with st.spinner("Ticket Creado exitosamente!"):
-#                        time.sleep(5)
-#                else:
-#                  st.error("Error al crear el ticket: " + str(response_pop.status_code))
-#                st.session_state["ticket"] = False 
+                response_pop = requests.post(
+                        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
+                        json=body,
+                )#
+                st.empty()
+                if response_pop.status_code == 200:
+                    with st.success("Ticket Creado exitosamente!"):
+                        time.sleep(10)
+                        st.empty()
+                    
+                else:
+                    st.error("Error al crear el ticket: " + str(response_pop.status_code))
+        st.session_state["ticket"] = False 
+        st.stop()
 
 # Función para enviar la solicitud POST
 def send_message(message, topic, language):
@@ -85,18 +100,25 @@ def send_message(message, topic, language):
             data_json = response.json()
             message_text = data_json["message"]
             nuevo_ticket = data_json["create_ticket"]
+            descrip = data_json["description"]
             st.write(message_text)
             st.session_state.messages.append({"role": "assistant", "content": message_text})
-            st.session_state["ticket"] = True
-            popover()
-#            if ticket:
-#                st.write("Crea un nuevo ticket en el siguiente formulario")
-#                popover()
+            if nuevo_ticket:
+                st.session_state["ticket"] = True
+                #st.sidebar.write("ticket activo: " , st.session_state["ticket"])
+                st.session_state["descript"] = descrip
+                popover()
+            #else: st.sidebar.write("mientras el ticket no activa: " , st.session_state["ticket"])
+
+
+#ticket =  st.session_state["ticket"]
+#if ticket:
+#    popover()
 
 # Sidebar
 sidebar = st.sidebar
-#with st.sidebar:
-#    st.image("logoSAv3.png")
+with st.sidebar:
+    st.image("logoSAv3.png")
 
 
 # Fetch topics before displaying the selection box
@@ -117,5 +139,21 @@ if prompt:
 reset_button = st.sidebar.button("Reiniciar Conversación")
 if reset_button:
   # Clear chat history
-  st.session_state.messages = []
-  st.experimental_rerun()
+ #st.session_state.messages = []
+ #st.experimental_rerun()
+    bienvenido_1 = ("Soy tu Asistente Virtual NEWTOMS, y estoy aquí para brindarte todo el apoyo que necesites.")
+    bienvenido_2= ("Si por algún motivo mi respuesta no cubre tus expectativas, recuerda que puedes escribir GENERAR UN TICKET para recibir una atención personalizada y resolver tus inquietudes.")
+    bienvenido_3 = ("!Hazme tu pregunta!")
+
+    st.session_state["messages"] = [{
+        "role": "assistant", 
+        "content": """
+        Soy tu Asistente Virtual **NEWTOMS**, y estoy aquí para brindarte todo el apoyo que necesites.
+
+        Si por algún motivo mi respuesta no cubre tus expectativas, recuerda que puedes escribir "GENERAR UN TICKET" para recibir una atención personalizada y resolver tus inquietudes.
+
+        **!Hazme tu  pregunta!**
+    """,
+        }]
+    st.session_state["ticket"] = False
+    st.experimental_rerun()
