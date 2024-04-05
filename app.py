@@ -93,7 +93,7 @@ def send_message(message, topic, language):
         "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/send-message",
         json=message,
     )
-
+    st.sidebar.write(message)
     if response.status_code == 200:
         with st.chat_message("assistant"):
             data_json = response.json()
@@ -105,7 +105,6 @@ def send_message(message, topic, language):
             if nuevo_ticket:
                 st.session_state["ticket"] = True
                 st.session_state["descript"] = descrip
-                st.write("ticket activado")
                 popover()
 
 
