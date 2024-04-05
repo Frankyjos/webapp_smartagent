@@ -5,6 +5,7 @@ import time
 
 st.session_state["ticket"] = False
 st.session_state["permanece"] = "abierto"
+st.session_state["message_text"] = " "
 #st.set_page_config(
 #    page_title="Smart Agent",
 #)
@@ -47,8 +48,10 @@ if message := st.chat_input("Escribe una pregunta"):
     with st.chat_message("user"):
         st.markdown(message)
 
+
+
 def popover():
-    with st.expander("Crea un nuevo ticket"):
+    with st.expander("hola"):
         with st.form("nuevo ticket", clear_on_submit=True):
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
@@ -84,7 +87,7 @@ def send_message(message, topic, language):
         "language": language,
         "topic": "jairo.davila+demo#"+topic,
         "summary": "false",
-        "chat_history": [],
+        "chat_history": message,
     }
     response = requests.post(
         "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/send-message",
@@ -101,11 +104,12 @@ def send_message(message, topic, language):
             st.session_state.messages.append({"role": "assistant", "content": message_text})
             if nuevo_ticket:
                 st.session_state["ticket"] = True
-                #st.sidebar.write("ticket activo: " , st.session_state["ticket"])
                 st.session_state["descript"] = descrip
+                st.write("ticket activado")
                 popover()
-            #else: st.sidebar.write("mientras el ticket no activa: " , st.session_state["ticket"])
 
+
+   
 
 # Sidebar
 sidebar = st.sidebar
