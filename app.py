@@ -3,12 +3,9 @@ import streamlit as st
 import time
 
 
-st.session_state["ticket"] = False
-st.session_state["permanece"] = "abierto"
-st.session_state["message_text"] = " "
-#st.set_page_config(
-#    page_title="Smart Agent",
-#)
+st.set_page_config(
+    page_title="Smart Agent",
+)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -20,7 +17,6 @@ if "messages" not in st.session_state:
             **!Hazme tu pregunta!**
     """,
         }]
-    st.session_state["ticket"] = False
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -51,8 +47,8 @@ if message := st.chat_input("Escribe una pregunta"):
 
 
 def popover():
-    with st.expander("hola"):
-        with st.form("nuevo ticket", clear_on_submit=True):
+    with st.expander("Haz click aqui"):
+        with st.form("nuevo ticket", clear_on_submit=False):
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
             descripcion = st.session_state["descript"]
@@ -74,11 +70,6 @@ def popover():
                     with st.success("Ticket Creado exitosamente!"):
                         time.sleep(10)
                         st.empty()
-                    
-                else:
-                    st.error("Error al crear el ticket: " + str(response_pop.status_code))
-        st.session_state["ticket"] = False 
-        st.stop()
 
 # Función para enviar la solicitud POST
 def send_message(message, topic, language):
@@ -93,7 +84,6 @@ def send_message(message, topic, language):
         "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/send-message",
         json=message,
     )
-    st.sidebar.write(message)
     if response.status_code == 200:
         with st.chat_message("assistant"):
             data_json = response.json()
@@ -103,12 +93,8 @@ def send_message(message, topic, language):
             st.write(message_text)
             st.session_state.messages.append({"role": "assistant", "content": message_text})
             if nuevo_ticket:
-                st.session_state["ticket"] = True
                 st.session_state["descript"] = descrip
                 popover()
-
-
-   
 
 # Sidebar
 sidebar = st.sidebar
@@ -144,5 +130,4 @@ if reset_button:
         **!Hazme tu pregunta!**
     """,
         }]
-    st.session_state["ticket"] = False
     st.experimental_rerun()
