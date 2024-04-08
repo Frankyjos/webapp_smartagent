@@ -2,7 +2,6 @@ import requests
 import streamlit as st
 import time
 
-ticket = False
 
 st.set_page_config(
     page_title="Smart Agent",
@@ -10,8 +9,14 @@ st.set_page_config(
 
 # Initialize chat history
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "Hello!"}]
-    st.session_state["ticket"] = False
+    st.session_state["messages"] = [{
+        "role": "assistant", 
+        "content": """
+            Hola Soy tu Asistente Virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
+ 
+            **!Hazme tu pregunta!**
+    """,
+        }]
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -39,32 +44,32 @@ if message := st.chat_input("Escribe una pregunta"):
     with st.chat_message("user"):
         st.markdown(message)
 
+
+
 def popover():
-       with st.form("tickets",clear_on_submit=False):
-            st.markdown("**Nuevo ticket**")
+    with st.expander("Haz click aqui"):
+        with st.form("nuevo ticket", clear_on_submit=False):
             name = st.text_input("Nombre")
             email = st.text_input("Correo")
-            descripcion = st.text_area("Descripción")
+            descripcion = st.session_state["descript"]
+            st.text_area("Descripción", value=descripcion)
             submitted = st.form_submit_button("Enviar")
+        if submitted:      
+                body = {
+                    "name": name,
+                    "email": email,
+                    "description": descripcion,
+                }
 
-#            if submitted:
-#                body = {
-#                    "name": name,
-#                    "email": email,
-#                    "description": descripcion,
-#                }
-
-#                response_pop = requests.post(
-#                        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
-#                        json=body,
-#                )#
-#
-#                if response_pop.status_code == 200:
-#                    with st.spinner("Ticket Creado exitosamente!"):
-#                        time.sleep(5)
-#                else:
-#                  st.error("Error al crear el ticket: " + str(response_pop.status_code))
-#                st.session_state["ticket"] = False 
+                response_pop = requests.post(
+                        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
+                        json=body,
+                )#
+                st.empty()
+                if response_pop.status_code == 200:
+                    with st.success("Ticket Creado exitosamente!"):
+                        time.sleep(10)
+                        st.empty()
 
 # Función para enviar la solicitud POST
 def send_message(message, topic, language):
@@ -73,25 +78,23 @@ def send_message(message, topic, language):
         "language": language,
         "topic": "jairo.davila+demo#"+topic,
         "summary": "false",
-        "chat_history": [],
+        "chat_history": message,
     }
     response = requests.post(
         "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/send-message",
         json=message,
     )
-
     if response.status_code == 200:
         with st.chat_message("assistant"):
             data_json = response.json()
             message_text = data_json["message"]
             nuevo_ticket = data_json["create_ticket"]
+            descrip = data_json["description"]
             st.write(message_text)
             st.session_state.messages.append({"role": "assistant", "content": message_text})
-            st.session_state["ticket"] = True
-            popover()
-#            if ticket:
-#                st.write("Crea un nuevo ticket en el siguiente formulario")
-#                popover()
+            if nuevo_ticket:
+                st.session_state["descript"] = descrip
+                popover()
 
 # Sidebar
 sidebar = st.sidebar
@@ -117,5 +120,14 @@ if prompt:
 reset_button = st.sidebar.button("Reiniciar Conversación")
 if reset_button:
   # Clear chat history
-  st.session_state.messages = []
-  st.experimental_rerun()
+ #st.session_state.messages = []
+ #st.experimental_rerun()
+    st.session_state["messages"] = [{
+        "role": "assistant", 
+        "content": """
+        Hola Soy tu Asistente Virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
+ 
+        **!Hazme tu pregunta!**
+    """,
+        }]
+    st.experimental_rerun()

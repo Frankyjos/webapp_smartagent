@@ -7,12 +7,13 @@ st.set_page_config(
     page_title="Smart Agent",
 )
 
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{
         "role": "assistant", 
         "content": """
-            Hola Soy tu Asistente Virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
+            Hola soy tu asistente virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
  
             **!Hazme tu pregunta!**
     """,
@@ -44,32 +45,22 @@ if message := st.chat_input("Escribe una pregunta"):
     with st.chat_message("user"):
         st.markdown(message)
 
-
-
-def popover():
-    with st.expander("Haz click aqui"):
-        with st.form("nuevo ticket", clear_on_submit=False):
-            name = st.text_input("Nombre")
-            email = st.text_input("Correo")
-            descripcion = st.session_state["descript"]
-            st.text_area("Descripción", value=descripcion)
-            submitted = st.form_submit_button("Enviar")
-        if submitted:      
-                body = {
-                    "name": name,
-                    "email": email,
-                    "description": descripcion,
-                }
-
-                response_pop = requests.post(
-                        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
-                        json=body,
-                )#
-                st.empty()
-                if response_pop.status_code == 200:
-                    with st.success("Ticket Creado exitosamente!"):
-                        time.sleep(10)
-                        st.empty()
+#def envio_ticket():
+#    body = {
+#        "name": "user1 test",
+#        "email": "ttest@gmail.com",
+#        "description":"tengo una incidencia",
+#        }
+#    response_pop = requests.post(
+#        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
+#        json=body,
+#        )
+#    if response_pop.status_code == 200:
+#        data_json = response_pop.json()
+#        id_ticket = data_json["ticket_id"]
+#        msg = "Ticket creado exitosamente bajo el ID #" + id_ticket
+#        st.session_state.messages.append({"role": "assistant", "content": msg})
+#        st.chat_message("assistant").write(msg)
 
 # Función para enviar la solicitud POST
 def send_message(message, topic, language):
@@ -93,9 +84,43 @@ def send_message(message, topic, language):
             st.write(message_text)
             st.session_state.messages.append({"role": "assistant", "content": message_text})
             if nuevo_ticket:
+                st.session_state["nuevo_ticket"] = True  # Store in session state for persistence
                 st.session_state["descript"] = descrip
-                popover()
+                st.experimental_rerun()
 
+if "nuevo_ticket" in st.session_state and st.session_state["nuevo_ticket"]:
+    with st.expander("**Click aqui para crear un nuevo ticket**"):
+        with st.form("Ticket", clear_on_submit=True):
+            name = st.text_input('Nombre')
+            email = st.text_input('Correo')
+            #st.text_area('Descripción')
+            descripcion = st.session_state["descript"]
+            st.text_area("Descripción", value=descripcion)
+            submit= st.form_submit_button("Crear")
+        if submit:
+            st.spinner(st.success("Ticket creado exitosamente!"))
+            st.session_state["nuevo_ticket"] = False
+            time.sleep(3)
+            #envio_ticket()
+
+            body = {
+            "name": name,
+            "email": email,
+            "description" :descripcion,
+            }
+            response_pop = requests.post(
+            "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
+            json=body,
+            )
+            if response_pop.status_code == 200:
+                data_json = response_pop.json()
+                id_ticket = data_json["ticket_id"]
+                msg = "Ticket creado exitosamente bajo el ID #" + id_ticket
+                st.session_state.messages.append({"role": "assistant", "content": msg})
+                st.chat_message("assistant").write(msg)
+
+            st.experimental_rerun()
+            
 # Sidebar
 sidebar = st.sidebar
 with st.sidebar:
@@ -122,10 +147,11 @@ if reset_button:
   # Clear chat history
  #st.session_state.messages = []
  #st.experimental_rerun()
+    st.session_state["nuevo_ticket"] = False
     st.session_state["messages"] = [{
         "role": "assistant", 
         "content": """
-        Hola Soy tu Asistente Virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
+        Hola soy tu asistente virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
  
         **!Hazme tu pregunta!**
     """,
