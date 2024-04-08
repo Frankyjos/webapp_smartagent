@@ -134,7 +134,7 @@ topics_name = fetch_topics()
 topic = sidebar.selectbox("Seleccione un tópico", topics_name)
 
 # Language selection
-language = sidebar.selectbox("Seleccione un idioma", ["Spanish", "English"])
+language = sidebar.selectbox("Seleccione un idioma", ["Español", "Ingles"])
 
 # Trigger on chat input
 prompt= st.chat_input
