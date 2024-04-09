@@ -89,24 +89,23 @@ def send_message(message, topic, language):
                 st.experimental_rerun()
 
 if "nuevo_ticket" in st.session_state and st.session_state["nuevo_ticket"]:
-    with st.expander("**Click aqui para crear un nuevo ticket**"):
+    with st.expander("**Click aqui para crear un nuevo ticket**" if st.session_state["select_language"]=="Español" else "**Click here to create a new ticket**"):
         with st.form("Ticket", clear_on_submit=True):
-            name = st.text_input('Nombre')
-            email = st.text_input('Correo')
-            #st.text_area('Descripción')
-            descripcion = st.session_state["descript"]
-            st.text_area("Descripción", value=descripcion)
-            submit= st.form_submit_button("Crear")
+            name = st.text_input('Nombre' if st.session_state["select_language"]=="Español" else "Name")
+            email = st.text_input('Correo' if st.session_state["select_language"]=="Español" else "Email")
+            descripcion = st.session_state["descript"] 
+            descripcion_completa = st.text_area("Descripción" if st.session_state["select_language"]=="Español" else "Description", value=descripcion)
+            submit= st.form_submit_button("Crear" if st.session_state["select_language"]=="Español" else "Create") 
         if submit:
-            st.spinner(st.success("Ticket creado exitosamente!"))
+            #st.spinner(st.success("Ticket creado exitosamente!"))
             st.session_state["nuevo_ticket"] = False
-            time.sleep(3)
+            #time.sleep(0.001)
             #envio_ticket()
 
             body = {
             "name": name,
             "email": email,
-            "description" :descripcion,
+            "description" :descripcion_completa,
             }
             response_pop = requests.post(
             "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
@@ -135,6 +134,7 @@ topic = sidebar.selectbox("Seleccione un tópico", topics_name)
 
 # Language selection
 language = sidebar.selectbox("Seleccione un idioma", ["Español", "Ingles"])
+st.session_state["select_language"] = language
 
 # Trigger on chat input
 prompt= st.chat_input
