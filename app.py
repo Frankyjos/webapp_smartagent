@@ -45,48 +45,41 @@ if message := st.chat_input("Escribe una pregunta"):
     with st.chat_message("user"):
         st.markdown(message)
 
-#def envio_ticket():
-#    body = {
-#        "name": "user1 test",
-#        "email": "ttest@gmail.com",
-#        "description":"tengo una incidencia",
-#        }
-#    response_pop = requests.post(
-#        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/tickets",
-#        json=body,
-#        )
-#    if response_pop.status_code == 200:
-#        data_json = response_pop.json()
-#        id_ticket = data_json["ticket_id"]
-#        msg = "Ticket creado exitosamente bajo el ID #" + id_ticket
-#        st.session_state.messages.append({"role": "assistant", "content": msg})
-#        st.chat_message("assistant").write(msg)
-
-# Función para enviar la solicitud POST
 def send_message(message, topic, language):
-    message= {
-        "message": message,
-        "language": language,
-        "topic": "jairo.davila+demo#"+topic,
-        "summary": "false",
-        "chat_history": message,
-    }
-    response = requests.post(
-        "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/send-message",
-        json=message,
-    )
-    if response.status_code == 200:
-        with st.chat_message("assistant"):
-            data_json = response.json()
-            message_text = data_json["message"]
-            nuevo_ticket = data_json["create_ticket"]
-            descrip = data_json["description"]
-            st.write(message_text)
-            st.session_state.messages.append({"role": "assistant", "content": message_text})
-            if nuevo_ticket:
-                st.session_state["nuevo_ticket"] = True  # Store in session state for persistence
-                st.session_state["descript"] = descrip
-                st.experimental_rerun()
+  # Create an empty list to store message history
+  message_history = []
+
+  # Update message_history with the current message and the previous message (if it exists)
+  if len(st.session_state.messages) > 1:
+    previous_message = st.session_state.messages[-2]
+    message_history.append(previous_message["content"])
+  message_history.append(message)
+  # Construct the message dictionary with the updated chat_history
+  message = {
+    "message": message,
+    "language": language,
+    "topic": "jairo.davila+demo#" + topic,
+    "summary": "false",
+    "chat_history": message_history,
+  }
+
+  response = requests.post(
+    "https://7op9qcm679.execute-api.us-east-1.amazonaws.com/dev/send-message",
+    json=message,
+  )
+  if response.status_code == 200:
+    with st.chat_message("assistant"):
+      data_json = response.json()
+      message_text = data_json["message"]
+      nuevo_ticket = data_json["create_ticket"]
+      descrip = data_json["description"]
+      st.write(message_text)
+      st.session_state.messages.append({"role": "assistant", "content": message_text})
+      if nuevo_ticket:
+        st.session_state["nuevo_ticket"] = True  # Store in session state for persistence
+        st.session_state["descript"] = descrip
+        st.experimental_rerun()
+
 
 if "nuevo_ticket" in st.session_state and st.session_state["nuevo_ticket"]:
     with st.expander("**Click aqui para crear un nuevo ticket**" if st.session_state["select_language"]=="Español" else "**Click here to create a new ticket**"):
@@ -97,10 +90,7 @@ if "nuevo_ticket" in st.session_state and st.session_state["nuevo_ticket"]:
             descripcion_completa = st.text_area("Descripción" if st.session_state["select_language"]=="Español" else "Description", value=descripcion)
             submit= st.form_submit_button("Crear" if st.session_state["select_language"]=="Español" else "Create") 
         if submit:
-            #st.spinner(st.success("Ticket creado exitosamente!"))
             st.session_state["nuevo_ticket"] = False
-            #time.sleep(0.001)
-            #envio_ticket()
 
             body = {
             "name": name,
@@ -145,8 +135,6 @@ if prompt:
 reset_button = st.sidebar.button("Reiniciar Conversación")
 if reset_button:
   # Clear chat history
- #st.session_state.messages = []
- #st.experimental_rerun()
     st.session_state["nuevo_ticket"] = False
     st.session_state["messages"] = [{
         "role": "assistant", 
