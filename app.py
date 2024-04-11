@@ -15,7 +15,7 @@ if "messages" not in st.session_state:
         "content": """
             Hola soy tu asistente virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
  
-            **!Hazme tu pregunta!**
+            **!Hazme una pregunta!**
     """,
         }]
 
@@ -141,7 +141,7 @@ if reset_button:
         "content": """
         Hola soy tu asistente virtual **NEWTOMS**. Si por algún motivo mi respuesta no cubre tus expectativas, solicita ayuda para atención personalizada. 
  
-        **!Hazme tu pregunta!**
+        **!Hazme una pregunta!**
     """,
         }]
     st.experimental_rerun()
